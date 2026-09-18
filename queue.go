@@ -15,6 +15,7 @@ type Message struct {
 	Message      string
 	MessageID    string
 	Destinataire string
+	Emetteur     string
 	Status       string
 }
 
@@ -59,4 +60,29 @@ func (q *Queue) AddProcess(id string, ch chan Message) bool {
 	q.processes[id] = ch
 	fmt.Printf("[QUEUE] Processus enregistré : %s\n", id)
 	return true
+}
+
+// Run écoute continuellement le channel d'entrée In et effectue le routage des messages.
+func (q *Queue) Run() {
+	for msg := range q.In {
+		switch msg.Status {
+		case StatusPut:
+			destCh, exists := q.processes[msg.Destinataire]
+			if !exists {
+				fmt.Printf("[QUEUE] Erreur : destinataire '%s' inexistant pour le message %s\n", msg.Destinataire, msg.MessageID)
+				if senderCh, ok := q.processes[msg.Emetteur]; ok {
+					senderCh <- Message{
+						MessageID:    msg.MessageID,
+						Destinataire: msg.Emetteur,
+						Status:       StatusError,
+						Message:      fmt.Sprintf("Destinataire inexistant : %s", msg.Destinataire),
+					}
+				}
+			} else {
+				q.messages[msg.MessageID] = msg.Emetteur
+				fmt.Printf("[QUEUE] Routage %s vers %s\n", msg.MessageID, msg.Destinataire)
+				destCh <- msg
+			}
+		}
+	}
 }
