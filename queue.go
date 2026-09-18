@@ -15,3 +15,19 @@ type Message struct {
 	Destinataire string
 	Status       string
 }
+
+// Queue représente la file de messages centrale.
+type Queue struct {
+	processes map[string]chan Message
+	messages  map[string]string
+	In        chan Message
+}
+
+// NewQueue crée et initialise une nouvelle instance de Queue.
+func NewQueue() *Queue {
+	return &Queue{
+		processes: make(map[string]chan Message),
+		messages:  make(map[string]string),
+		In:        make(chan Message),
+	}
+}
