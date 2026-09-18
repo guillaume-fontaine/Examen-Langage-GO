@@ -66,7 +66,7 @@ func (q *Queue) AddProcess(id string, ch chan Message) bool {
 func (q *Queue) Run() {
 	for msg := range q.In {
 		switch msg.Status {
-		case StatusPut:
+		case StatusPut, StatusKill:
 			destCh, exists := q.processes[msg.Destinataire]
 			if !exists {
 				fmt.Printf("[QUEUE] Erreur : destinataire '%s' inexistant pour le message %s\n", msg.Destinataire, msg.MessageID)
@@ -79,8 +79,12 @@ func (q *Queue) Run() {
 					}
 				}
 			} else {
-				q.messages[msg.MessageID] = msg.Emetteur
-				fmt.Printf("[QUEUE] Routage %s vers %s\n", msg.MessageID, msg.Destinataire)
+				if msg.Status == StatusPut {
+					q.messages[msg.MessageID] = msg.Emetteur
+					fmt.Printf("[QUEUE] Routage %s vers %s\n", msg.MessageID, msg.Destinataire)
+				} else if msg.Status == StatusKill {
+					fmt.Printf("[QUEUE] Routage du signal kill vers %s\n", msg.Destinataire)
+				}
 				destCh <- msg
 			}
 

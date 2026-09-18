@@ -117,3 +117,40 @@ func Emitter(in <-chan Message, out chan<- Message) {
 		}
 	}
 }
+
+// Killer attend 15 secondes puis transmet un signal kill à l'ensemble des processus connus.
+func Killer(in <-chan Message, out chan<- Message) {
+	knownProcesses := make(map[string]bool)
+	fmt.Println("[KILLER] Démarrage du processus killer")
+
+	timer := time.NewTimer(15 * time.Second)
+	defer timer.Stop()
+
+	for {
+		select {
+		case msg, ok := <-in:
+			if !ok {
+				return
+			}
+			switch msg.Status {
+			case StatusNew:
+				knownProcesses[msg.Message] = true
+				fmt.Printf("[KILLER] Processus détecté : %s\n", msg.Message)
+			case StatusKill:
+				fmt.Println("[KILLER] Signal kill reçu, arrêt du killer")
+				return
+			}
+
+		case <-timer.C:
+			fmt.Println("[KILLER] Envoi du signal kill à tous les processus")
+			for target := range knownProcesses {
+				out <- Message{
+					Destinataire: target,
+					Status:       StatusKill,
+				}
+			}
+			fmt.Println("[KILLER] Signal kill envoyé. Arrêt du killer.")
+			return
+		}
+	}
+}
