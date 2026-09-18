@@ -8,11 +8,16 @@ import (
 
 // Exemples de données JSON (villes européennes) pour l'Emitter
 var sampleCities = []string{
-	`{"ville": "Paris", "pays": "France", "population": 2102650, "capitale": true}`,
-	`{"ville": "Berlin", "pays": "Allemagne", "population": 3645000, "capitale": true}`,
-	`{"ville": "Madrid", "pays": "Espagne", "population": 3223000, "capitale": true}`,
-	`{"ville": "Rome", "pays": "Italie", "population": 2873000, "capitale": true}`,
-	`{"ville": "Amsterdam", "pays": "Pays-Bas", "population": 821750, "capitale": true}`,
+	`{"ville": "Paris", "pays": "France", "population": 2102650, "langue": "français", "monnaie": "EUR", "latitude": 48.8566, "longitude": 2.3522, "capitale": true}`,
+	`{"ville": "Berlin", "pays": "Allemagne", "population": 3700000, "langue": "allemand", "monnaie": "EUR", "latitude": 52.5200, "longitude": 13.4050, "capitale": true}`,
+	`{"ville": "Madrid", "pays": "Espagne", "population": 3400000, "langue": "espagnol", "monnaie": "EUR", "latitude": 40.4168, "longitude": -3.7038, "capitale": true}`,
+	`{"ville": "Rome", "pays": "Italie", "population": 2800000, "langue": "italien", "monnaie": "EUR", "latitude": 41.9028, "longitude": 12.4964, "capitale": true}`,
+	`{"ville": "Lisbonne", "pays": "Portugal", "population": 550000, "langue": "portugais", "monnaie": "EUR", "latitude": 38.7223, "longitude": -9.1393, "capitale": true}`,
+	`{"ville": "Amsterdam", "pays": "Pays-Bas", "population": 930000, "langue": "néerlandais", "monnaie": "EUR", "latitude": 52.3676, "longitude": 4.9041, "capitale": true}`,
+	`{"ville": "Vienne", "pays": "Autriche", "population": 2000000, "langue": "allemand", "monnaie": "EUR", "latitude": 48.2082, "longitude": 16.3738, "capitale": true}`,
+	`{"ville": "Prague", "pays": "République tchèque", "population": 1400000, "langue": "tchèque", "monnaie": "CZK", "latitude": 50.0755, "longitude": 14.4378, "capitale": true}`,
+	`{"ville": "Stockholm", "pays": "Suède", "population": 1000000, "langue": "suédois", "monnaie": "SEK", "latitude": 59.3293, "longitude": 18.0686, "capitale": true}`,
+	`{"ville": "Athènes", "pays": "Grèce", "population": 650000, "langue": "grec", "monnaie": "EUR", "latitude": 37.9838, "longitude": 23.7275, "capitale": true}`,
 }
 
 // Parser écoute les messages sur son channel in, valide leur format JSON
