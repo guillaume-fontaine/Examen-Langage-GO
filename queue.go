@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 const (
 	StatusNew   = "new"
 	StatusPut   = "put"
@@ -30,4 +32,31 @@ func NewQueue() *Queue {
 		messages:  make(map[string]string),
 		In:        make(chan Message),
 	}
+}
+
+// AddProcess enregistre un nouveau processus dans la Queue.
+// Si le processus existe déjà, la fonction retourne false.
+// Sinon, elle enregistre le processus, notifie les processus existants
+// et informe le nouveau des processus déjà présents.
+func (q *Queue) AddProcess(id string, ch chan Message) bool {
+	if _, exists := q.processes[id]; exists {
+		fmt.Printf("[QUEUE] Refus d'enregistrement : le processus '%s' existe déjà\n", id)
+		return false
+	}
+
+	// Notifier les anciens processus et informer le nouveau processus des existants
+	for existingID, existingCh := range q.processes {
+		existingCh <- Message{
+			Status:  StatusNew,
+			Message: id,
+		}
+		ch <- Message{
+			Status:  StatusNew,
+			Message: existingID,
+		}
+	}
+
+	q.processes[id] = ch
+	fmt.Printf("[QUEUE] Processus enregistré : %s\n", id)
+	return true
 }
