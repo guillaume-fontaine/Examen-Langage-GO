@@ -83,6 +83,18 @@ func (q *Queue) Run() {
 				fmt.Printf("[QUEUE] Routage %s vers %s\n", msg.MessageID, msg.Destinataire)
 				destCh <- msg
 			}
+
+		case StatusOK, StatusError:
+			senderID, exists := q.messages[msg.MessageID]
+			if !exists {
+				fmt.Printf("[QUEUE] Avertissement : aucun émetteur trouvé pour le MessageID %s\n", msg.MessageID)
+			} else {
+				if senderCh, ok := q.processes[senderID]; ok {
+					fmt.Printf("[QUEUE] Réponse %s (%s) transmise à %s\n", msg.MessageID, msg.Status, senderID)
+					senderCh <- msg
+				}
+				delete(q.messages, msg.MessageID)
+			}
 		}
 	}
 }
